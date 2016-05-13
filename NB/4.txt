@@ -1,0 +1,150 @@
+Program 4 : Design and implement an offline database communication system using JMS (Java Message Service) to service
+the client request.
+
+Adding connection factory and queue
+-----------------------------------
+
+1. Go to services -> server -> glassfish -> start
+2. Once its started, right click on the glassfish server -> view domain admin console
+3. A web page opens with url = http://localhost:4848/common/index.jsf (open in chrome or firefox don’t explorer)
+4. Click on JMS Resources tab.
+5. Click Connection Factories
+6. Click on new New.. Button
+   JNDI Name = jms/queue, Resource type = javax.jms.QueueConnectionFactory
+   OK
+7. Click on JMS Resources tab.
+8. Click Destination Resources
+9. Click on new New.. Button
+   JNDI Name = jms/dest, Physical Destination Name = anything, Resource type = javax.jms.Queue
+   OK
+10. These 2 will be visible in the JMS Resources and enabled by default.
+
+
+
+Message driven Bean
+-------------------
+1. File -> New -> Project -> Java EE -> New Enterprise Application
+   Name = jms-eap, Next.
+   Choose java EE Version = 5(don’t select 6 or 7 version), Select both ejb and war modules. Finish
+   As usual, 3 projects will be created.
+   
+2. Right click on jms-eap-ejb project, New -> Other -> Enterprise java beans -> Message Driven Bean
+   Name = newjms, package = rvce, 
+   Select  server destination. By default jms/dest will be chosen
+   Next -> finish
+   
+3. A java file opens with this thing after imports.
+	@MessageDriven(mappedName = "jms/dest", activationConfig = {
+    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
+	})
+)
+4. Add the code below in onMessage() method
+(
+import javax.jms.TextMessage;
+import javax.jms.JMSException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+)
+
+
+	@Override
+    public void onMessage(Message message) {
+        TextMessage txtMsg = null;
+        txtMsg = (TextMessage) message;
+        try {
+            System.out.println("Message recieved = "+txtMsg.getText());
+        } catch (JMSException ex) {
+            Logger.getLogger(newjms.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+
+jsp
+---
+
+1. Right click on jms-eap-war project, New -> JSP
+   Name = myJms, finish
+   
+2. Add this code
+<%-- 
+    Document   : myJms
+    Created on : May 1, 2015, 12:09:02 AM
+    Author     : Sandeep
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>JSP Page</title>
+    </head>
+    <body>
+        <form action="newServlet">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Your message:</td>
+                        <td><input type="text" name="msg" value="" size="50" /></td>
+                    </tr>
+                </tbody>
+            </table>
+            <input type="submit" value="Submit" name="submit" />
+        </form>
+        
+    </body>
+</html>
+
+Servlet
+-------
+
+1. Right click on jms-eap-war project, New -> Servlet
+   Name = newServlet, package = rvce -> Finish.
+2. Open newServlet.java file, right click -> (inside newServlet class )Insert code -> Send JMS message.
+3. Select message driven bean.
+   Message Driven Bean  newjms(jms-eap-ejb), 
+   Destination  jms/dest, 
+   Connection Factory = jms/queue ( the one given in admin console)
+   OK.
+   Many methods will be created like sendJMSMessageToDest, createJMSMessageForjmsDest etc.
+4. Inside processRequest message, after try block, Add this code
+	protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            String str = request.getParameter("msg");
+            sendJMSMessageToDest(str);
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet newServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Your message, '" + str + "' is recieved in the server<br />Please check logs</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        } catch (JMSException ex) {
+            Logger.getLogger(newServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+	
+	
+Run
+---
+
+1. Right click on jms-eap-ejb project, deploy.
+2. We need to get BUILD SUCCESSFUL message in console.
+3. The project should be visible in glassfish page.(Applications tab)
+4. Right click on jms-eap-war project, Run (or right click myJms.jsp file and run )
+5. Webpage with url = http://localhost:8080/jms-eap-war/ 	opens
+6. Load http://localhost:8080/jms-eap-war/myJms.jsp	
+7. Enter a message and click on Submit.
+8. We need to get the success message, also the same will be available in console of glassfish.
+	
