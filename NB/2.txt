@@ -1,0 +1,52 @@
+
+1.	File->new -> Project -> Java -> Java class library
+2.	Name – it-remote, Finish
+
+3.	€File -> new -> Java EE -> Enterprise Application -> OK.
+4.	Name - it-sb-eap2 - > next. 
+5.	Choose glassfish server.
+6.	(check mark only ejb module) Uncheck create web module
+7.	Finish
+8.	2 Projects will be created, it-sb-eap2 (triangle) and it-sb-eap2-ejb (bean)
+9.	Right click on bean project, new -> session bean
+10.	Name – ITService, package –ejb, selet stateless, check mark Remote, remote-in project -> it-remote
+11.	 In java file, (ITServices.java, inside ITServices class) right click, add business method. 
+
+12.	Name = calculateTax, return type double
+13.	 Click Add   (3 params )=  fullName(String), income(double). Deductions(double). OK
+
+14.	Add below code
+15.	      @Override
+16.	    public Double calculateTax(String fullName, double income, double Deductions) {
+17.	        if(income>Deductions){
+18.	            return (income-Deductions)*0.3;
+19.	        }
+20.	        else{
+21.	            return 0.0;
+22.	        }
+23.	    }
+24.	File -> new -> Java EE -> Enterprise Application Client-> OK.
+
+25.	Name = it-client, Next,(do not “Add to Enterprise Application”,i.e keep <none> (1 warning in ans)  ) finish. (itclient.Main will be created).
+
+
+26.	In Main.java, (inside main  insert code  ) call enterprise bean,(extend it-sb-eap2-ejb) select ITService
+27.	Add this code 
+28.	public static void main(String[] args) {
+29.	        // TODO code application logic here
+30.	        Scanner scan = new Scanner(System.in);
+31.	        System.out.println("Welcome to tax calculator");
+32.	        System.out.println("Enter name");
+33.	        String name = scan.next();
+34.	        System.out.println("Enter the income");
+35.	        double income = scan.nextDouble();
+36.	        System.out.println("Enter the deduction");
+37.	        double deduction = scan.nextDouble();
+38.	        System.out.println(name+", your tax amount = "+iTService.calculateTax(name, income, deduction));
+39.	        
+40.	    }
+41.	Clean and build all projects
+42.	Deploy it-sb-eap2 project
+43.	Run the client
+44.	Check the tax by giving required input
+45.	 
