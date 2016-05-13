@@ -1,0 +1,130 @@
+Program 5 - Design and implement the client code to call the Micro soft service like free service from UDDI (Universal
+Description Discovery Protocol).
+
+UDDI Server
+-----------
+1. Start the glassfish server.
+   Go to services tab, servers -> glassfish 4.1 -> Start.
+   
+2. File -> New -> Java Web -> Web Application -> Next.
+   Name = UDDI-Server
+   Next-> Next->	(Java EE 5) (never take java EE 6 web or java EE 7 web)
+   Choose all frameworks (Springs, Java Server Faces, Struts, Hibernate)
+   Finish.
+
+3. Right click on project -> New -> Other -> Web Services -> Select Web Service -> Next
+   Name = divideclient, package = rvce, choose design webservice from scratch.
+   finish.
+   
+4. Open divideclient.java(inside web services ), click on design mode (in tool bar)
+   Click on Add Operation button
+   Name = divide, Return type = java.lang.Integer, 
+   Add 2 parameters = number1,number2, type = int
+   OK.
+   
+   Add the code below in divide method.
+     @WebMethod(operationName = "divide")
+    public Integer divide(@WebParam(name = "number1") int number1, @WebParam(name = "number2") int number2) {
+        //TODO write your implementation code here:
+       return number1/number2;
+    }
+	
+5. Right click on project. click on deploy.
+   We need to get BUILD SUCCESSFUL message. 
+   Check for the presence of application in glassfish admin console  applications (http://localhost:4848/common/index.jsf) (you should see UDDI-server)
+   
+6. Go to project folder, expand Webservices folder. 
+   Right click on divideclient -> Choose Test Web Service
+   Web page opens with the method we created. Give some inputs and check the method(divide).
+   We can also see the SOAP xml for Request and Response.   
+   
+   
+UDDI Client
+-----------  
+1. File -> New -> Java Web -> Web Application -> Next.
+   Name = UDDI-Client
+   Next-> Next->
+   Choose all frameworks (Springs, Java Server Faces, Struts, Hibernate)
+   Finish.
+   
+2. Right click on project -> New -> Other -> Web Services -> Select Web Service Client -> Next
+   Choose the project as UDDI-Server and inside that divideclient.
+   finish.
+   
+3. Open the index.jsp file inside 'Web Pages' folder of project.
+	Add the code below :
+	
+	<html>
+    <body>
+       <form action="action.jsp" method="POST">
+            Enter first number <input type="text" name="n1" value="" /></br>
+           
+            Enter second number <input type="text" name="n2" value="" /></br>
+        
+            <input type="submit" value="submit" name="submit" />
+       </form>
+    </body>
+	</html>
+(remove webservice.do)
+	
+4. Right click on Web Pages folder. Choose new-> JSP
+   Name = action. 
+   finsih
+	
+5. Open the acion.jsp and change title and h1 tag to "UDDI Client SOAP"
+   Place the mouse cursor after h1 tag, Right click -> Choose "Web service client resource" -> Call Webservice operation ( caution : if no service  you did wrong in creating action.jsp in server, it should be in client)
+   Choose divideclient -> divideclient -> divideclientPort -> divide.  
+   OK.
+   Code will be generated to call the webservice, make these modifications.
+   
+<%-- 
+    Document   : action
+    Created on : Apr 30, 2015, 11:22:21 AM
+    Author     : Sandeep
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>UDDI Client SOAP</title>
+    </head>
+    <body>
+        <h1>UDDI Client SOAP</h1>
+        
+    <%-- start web service invocation --%><hr/>
+    <%
+    try {
+        int a = Integer.parseInt(request.getParameter("n1"));
+        int b = Integer.parseInt(request.getParameter("n2"));
+        
+	rvce.Divideclient_Service service = new rvce.Divideclient_Service();
+	rvce.Divideclient port = service.getDivideclientPort();
+	 // TODO initialize WS operation arguments here
+	int number1 = a;
+	int number2 = b;
+	// TODO process result here
+	java.lang.Integer result = port.divide(number1, number2);
+	out.println("Result = "+result);
+    } catch (Exception ex) {
+	// TODO handle custom exceptions here
+        out.println(ex);
+    }
+    %>
+    <%-- end web service invocation --%><hr/>
+    </body>
+</html>
+
+6. Right click on project. click on deploy.
+   We need to get BUILD SUCCESSFUL message. 
+   Check for the presence of application in glassfish admin console (localhost:4848)
+
+7. Right click on the project -> Run.
+   Load the index.jsp page ->  http://localhost:8080/UDDI-Client/index.jsp
+   Input few numbers and check.
+   
+	
+   
+   
+   
