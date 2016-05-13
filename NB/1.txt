@@ -1,0 +1,102 @@
+	INTERFACE:
+1.	Open File -> New Project,  JAVA  “Java Class Library”.
+2.	Click on next and give project name as “it-rmi-services” and click on Finish.
+3.	Right click on the project and select New->Other->Java->Java Interface
+4.	Give interface name as “ItRmiServices” and package as package “it.rmi.services”
+5.	Click on Finish
+6.	Insert the following code in the class(ItRmiServices) and save the file.
+
+package it.rmi.services;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface ItRmiServices extends Remote{
+    public double calculateTax(String name,double income,double deduction) throws RemoteException;
+}
+
+SERVER:
+
+7.	Open File -> New Project,  select “Java Application” under Java  category.
+8.	Click on next and give project name as “it-rmi-server” and click on Finish.
+9.	A class with name ItRmiServer will be created automatically and opened in editor.
+10.	Insert the following code in the file and save.
+(import java.rmi.registry.Registry;
+import java.rmi.registry.LocateRegistry;)
+
+public static void main(String[] args) {
+       try{
+            Registry registry = LocateRegistry.createRegistry(1099);
+            ItRmiServicesImpl itSvc = new ItRmiServicesImpl ();
+            registry.rebind("ItTaxCal", itSvc);	//itSvc error will go after implementer class
+            System.out.println("Server is ready");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+IMPLEMENTER CLASS
+(can be done by adding class from previous error)
+11.	Right click on the it-rmi-server project and select New->Java Class.
+12.	Give the name as ItRmiServicesImpl and click on finish.
+13.	Insert the following code in the file and save it.
+
+(
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+)
+
+public class ItRmiServicesImpl extends UnicastRemoteObject implements ItRmiServices {
+
+    public ItRmiServicesImpl() throws RemoteException{    
+    }
+    
+    final double SLAB_RATE = 30.0;
+    @Override
+    public double calculateTax(String name, double income, double deduction) throws RemoteException {
+       double tax =0;
+       if(income > deduction){
+           tax = (income - deduction)*(SLAB_RATE/100);
+       }
+       return tax;
+    }
+    
+}
+
+
+14.	Right click on the project, select Properties -> Libraries. Under compile tab, click on Add Project. Select the it-rmi-services project listed and click on Add Project Jar. Click on OK.
+15.	Go to the ItRmiServicesImpl file and add import to ItRmiServices.
+(import it.rmi.services.ItRmiServices; //the one from services file
+)
+
+CLIENT:
+16.	Open File -> New Project,  select “Java Application” under Java  category.
+17.	Click on next and give project name as “it-rmi-client” and click on Finish.
+18.	A class with name ItRmiClient will be created automatically and opened in editor.
+19.	Insert the following code in the file and save.
+public static void main(String[] args) {
+        try{
+            Registry registry = LocateRegistry.getRegistry("localhost",1099);
+            ItRmiServices itSvc = (ItRmiServices) registry.lookup("ItTaxCal");
+            double tax = itSvc.calculateTax("Mr.XYZ",10000,6000);
+            System.out.println("Tax calculated ="+tax);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+20.	(do it before 19, so ItRmiServices won’t  )Right click on the project, select Properties -> Libraries. Under compile tab, click on Add Project. Select the it-rmi-services project listed and click on Add Project Jar. Click on OK.
+21.	Go to the ItRmiClient file and add import to ItRmiService
+(import it.rmi.services.ItRmiServices;)
+
+EXECUTION:
+22.	Run the it-rmi-server project by right clicking on project and choosing Run
+23.	We need to get “Server is ready” message in console
+24.	Run the it-rmi-client project by right clicking on project and choosing Run
+25.	The tax will be calculated and printed in console
+
+
+
