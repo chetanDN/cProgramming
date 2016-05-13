@@ -1,0 +1,101 @@
+1.click on service -> Server -> Right Click on GlassFish Server 4.1 ->Start
+2.Click on database -> JAVa DB ->Start
+3. jdbc:derby://localhost:1527 and connect
+
+-----------------------------------------------------------------------------------
+
+4.New java EE project - Program3 - choose Ent edition 5 and choose both war and ejb. Finish
+Check 3 folders in project window
+
+5. Right click on Program3-ejb -> new -> Entity class
+6. Give a name Student and package rvce -> Next
+7. choose Primary Key Type = BigInteger
+8. Choose data source as jdbc/sample , select drop and create ,choose create and finish
+
+9.change GenerationType.AUTO to GenerationType.IDENTITY
+
+-------------------------------------------------------------------------------------
+
+10. Right click on Program3-ejb -> new -> other ->Ent java bean -> Session bean for Entity classes. Next
+Add this to right side -> rvce.Student. Next
+Choose local
+Finish
+
+4 classes will be created. One java, 1 persistence and a bean
+
+Add this line to StudentFacadeLocal.java
+boolean insertStudent(String name, Integer marks);
+
+
+Add this line to StudentFacade.java
+
+   static BigInteger id;
+
+    @Override
+    public boolean insert(String Name, Integer marks) 
+    {
+            
+          try{
+            Student stu = new Student();
+            stu.setId(id);
+            stu.setMarks(marks);
+            stu.setName(Name);
+            em.persist(stu);
+            return true;
+          }
+          catch(Exception e)
+          {
+              e.printStackTrace();
+              return false;
+          }
+            
+            
+    }
+   
+------------------------------------------------------------------------------------------
+
+10. Program-3-war. New jsp and finish
+
+11. change the title to prog3. Ctrl-Shift-8 to get pallete
+ <body>
+        <p>
+        <form action="./NewServlet">
+            Name : <input type="text" name ="name"><br><br>
+            Marks : <input type="text" name="marks"><br><br>'
+            <input type ="submit" name ="submit">
+        </form>
+    </p>
+ </body>
+
+12. Add new servlet, newServlet, package -rvce. Next. Finish
+13. add @EJB StudentFacadelocal to newservlet by right click((insert code)) ->call enterprise bean -> choose StudentFacade bean  and ok
+  	out.println("<body>");
+            String name,marks;
+            name = request.getParameter("name");
+            marks= request.getParameter("marks");
+            boolean result = studentFacade.insert(name, Integer.parseInt(marks));
+            if(result)
+            out.println("Insertion Successful");
+            else
+            out.println("Error");  
+            out.println("</body>");
+  	
+
+------------------------------------------------------------------------------------------
+14. Clean and Build all the projects.
+
+15. Deploy and Run the triangle project.
+
+16. In URL include newjsp.jsp
+        
+add name and marks and submit it
+------------------------------------------------------------------------------------------
+
+17. Back to netbeans, select jdbc:derby.
+
+Go to tables and view data. Execute the query to get the data
+
+
+------------------------------------------------------------------------------------------
+
+
