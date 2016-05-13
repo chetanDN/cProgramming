@@ -1,0 +1,78 @@
+WEB SERVICE:
+------------------------------------------------------------------------------
+
+1. File -> new -> Java Web -> New Web Application
+2. Give name as TaxCalWebService and next(next Java EE 5)  and finish.
+3. Right click on project, new -> Web Service
+4. Give name as CalculateTaxWebService, package as "ws" and finish.
+5. Go to CalculateTaxWebService.java file, insert code and Add Webservice operation.
+6. Give name as calculateTax, return type double. Add 3 params, 
+	full Name - String
+	income 	  - double
+	deductions- double
+  and finish.
+7. Add the below code in the calculateTax method.
+  
+       double taxAmnt = 0.0;
+       if(income> deductions){
+           double taxableAmt = income - deductions;
+           taxAmnt = taxableAmt*0.30;
+       }
+       return taxAmnt;
+
+8. Run the project. We need to get the builded successfully mesage and the browser should open. Close the browser.
+
+
+CLIENT:
+------------------------------------------------------------------------------
+
+1. File -> new -> Java Web -> New Web Application
+2. Give name as TaxCalWebServiceClient (next Java EE 5) and finish.(index.jsp)
+(if choosen Java EE 7 web, you get index.html
+3. Right click on source package and add new web service client.
+4. Browse the project and class name as CalculateTaxWebService, and package as ws
+	Right click on source packagenewservletname TaxCalcServletpackage “ws”.
+5. Go to the java file(taxCalcServlet) and insert code. Choose "call web service operation" and choose the calculateTax Method.
+6. Add the code below :
+ 	    out.println("<body>");
+            //out.println("<h1>Servlet TaxCalcServlet at " + request.getContextPath() + "</h1>");
+            String fullName = request.getParameter("fullName");
+            double income = Double.valueOf(request.getParameter("income"));
+            double deduction = Double.valueOf(request.getParameter("deduction"));
+            double tax = calculateTax(fullName, income, deduction);
+            out.println("<h1>Hi "+fullName +" your tax information is </h1>");
+            out.println("<h1> income :" +income +"</h1>");
+            out.println("<h1> deductions :" +deduction +"</h1>");
+            out.println("<h1> tax :" +tax +"</h1>");
+            out.println("</body>");
+7. Go the index.jsp and add the code below(index.html is got if java EE 7 web was choosen)
+	<body>
+        <form action="TaxCalcServlet" method="post">
+            <fieldset>
+                <legend>
+                    Provide name, income and deduction details
+                </legend>
+
+                <p>
+                    <label>Full Name</label>
+                    <input type="text" name="fullName"/>
+                </p>
+                <p>
+                    <label>Income</label>
+                    <input type="text" name="income"/>
+                </p>
+                <p>
+                    <label>Deduction</label>
+                    <input type="text" name="deduction"/>
+                </p>
+                <p>
+                    <input type="submit" value="submit"/>
+                </p>
+            </fieldset>
+        </form>
+
+	</body>
+8. Run the client application
+9. The browser window opens with the tax calculating forms.
+10. Enter the details and check the tax.
+------------------------------------------------------------------------------
