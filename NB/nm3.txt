@@ -1,0 +1,25 @@
+1.  Download Apache server  from apachelounge.com
+	and visual c++ redistributable for visual studio 2012
+2.	run VC2012 and install
+	unzip apache binaries and copy Apache24 folder to C:
+3.	open cmd prompt in admin mode and set path to c:\Apache24\bin
+4.	open httpd.conf file in conf directory
+	modify the following
+	@line 58 -> Listen *:80
+	@line 155 remove # i.e for LoadModule rewrite_module modules/mod_rewrite.so
+	@line 210 set to -> ServerAdmin admin@localhost
+	@line 219 enable(remove #) -> ServerName localhost:80
+	@line 243 and 244 chance directory as per your html file location and use "\" for directory path
+	@line 264 -> AllowOverride None to -> AllowOverride All
+5.	back in cmd prompt -> type "httpd -t" to get Syntex OK
+	then "httpd -k install" to install apache. 
+6.	later type services in windows search, click it, 
+	click on Apache2.4 and then click start in leftside
+7.	open your web browser and type "localhost" your html file would load
+
+	(in virtual machine -> settings -> network -> Attached to - Bridged Adapter -> promiscuous mode - Allow all-> ok)
+
+8.	now take the ip address(ipconfig) of guest machine(one in which apache is running),
+	from host machine open browser and enter guest machine ip -> you should be able to get the same web page.
+	(if not turn off fire wall in guest machine i.e windows bar -> firewall)
+9.	Now using wireshark analyse traffic (in filter ip.addr== guest machine ip)
