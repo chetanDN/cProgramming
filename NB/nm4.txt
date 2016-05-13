@@ -1,0 +1,16 @@
+1.	follow prog 3 steps
+2.	create an folder that to be protected in your web page directory( i used default directory path and new folder created is "svn" also insert an index.html inside "svn")
+3.	open cmd prompt in admin-> path to Apache24\bin ->
+4.	set user name and password file (i.e .htpasswd as follows)
+	htpasswd -c .htpasswd yourUserName
+	enter your choice password twice.
+	.htpasswd file will be created(in Apache24\bin). -> move this file to c:\Apache24
+5. paste after line 270( after </Directory>)
+	<Directory  ~ "c:/Apache24/htdocs/svn">				#<-- directories "/" slashes here not "\"
+		AllowOverride None
+		AuthType basic
+		AuthName "Restricted Directory"					#<-- any name
+		AuthUserFile c:/Apache24/.htpasswd				#<-- password file as mensioned directory in above
+		Require valid-user
+	</Directory>
+6. Restart Apache Service(important)
