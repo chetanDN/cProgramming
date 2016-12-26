@@ -1,5 +1,6 @@
 // DataStructure.cpp : Defines the entry point for the console application.
 //
+/*checked under VS2012 */
 
 #include "stdafx.h"
 #include <stdlib.h>		//DMA
